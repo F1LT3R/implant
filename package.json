@@ -1,0 +1,57 @@
+{
+	"name": "implant",
+	"main": "implant",
+	"version": "1.0.0",
+	"description": " 👽  Dynamic asynchronous string content replacement.",
+	"license": "MIT",
+	"repository": "f1lt3r/implant",
+	"author": {
+		"name": "F1LT3R",
+		"email": "al@pwn.io",
+		"url": "f1lt3r.io"
+	},
+	"scripts": {
+		"test": "xo && yarn run cover",
+		"unit": "ava",
+		"watch": "ava --watch",
+		"cover": "nyc --reporter=lcov --reporter=html --reporter=text ava *.test.js",
+		"coveralls": "cat ./coverage/lcov.info | ./node_modules/.bin/coveralls -v",
+		"precommit": "yarn test"
+	},
+	"files": [
+		"index.js"
+	],
+	"keywords": [],
+	"dependencies": {
+		"balanced-match": "^1.0.0",
+		"chalk": "^2.3.2",
+		"lighter-json": "^2.0.0"
+	},
+	"devDependencies": {
+		"ava": "^0.25.0",
+		"coveralls": "^3.0.0",
+		"nyc": "^11.6.0",
+		"request": "^2.85.0",
+		"xo": "^0.20.3"
+	},
+	"nyc": {
+		"reporter": [
+			"lcov",
+			"text"
+		]
+	},
+	"xo": {
+		"esnext": true,
+		"semicolon": false,
+		"globals": [
+			"__dirname"
+		],
+		"rules": {
+			"no-console": 1,
+			"space-before-function-paren": 0
+		}
+	},
+	"ava": {
+		"failFast": true
+	}
+}
