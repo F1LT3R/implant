@@ -220,3 +220,22 @@ test('Using JavaScript objects', async t => {
 	`
 	t.is(result, expected)
 })
+
+test('Using illegal JavaScript values', async t => {
+	const html = `
+		<div>{include: article.html}</div>
+	`
+
+	const handlers = {
+		include: uri => {
+			return uri
+		}
+	}
+
+	const result = await implant(html, handlers)
+
+	const expected = `
+		<div>article.html</div>
+	`
+	t.is(result, expected)
+})

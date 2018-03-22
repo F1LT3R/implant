@@ -94,6 +94,39 @@ Result:
 <div>Foo. Or foo not. There is no bar.</div>
 ```
 
+## Using Illegal JavaScript Values
+
+It is also possible to use illegal JavaScript values, such as references to objects that do not exist. For example:
+
+```html
+<div>{foo: this.value.does.not.exist}</div>
+```
+
+When an illegal value is encountered, Implant pass back a stringified version of the handler.
+
+```js
+const handlers = {
+    foo: uri => console.log
+    // 'this.value.does.not.exist'
+}
+```
+
+Handling values this way allows you to write cleaner syntax in your content templates by excluding quotes; or designing your own custom syntax.
+
+You might use this feature to reference filenames without quotes:
+
+```html
+<div>{article: programming-101.md}</div>
+```
+
+Then you could fetch and render the article like this.
+
+```js
+const handlers = {
+    foo: uri => fetchPost(uri)
+}
+```
+
 ## Credits
 
 Thanks to the following designers from the Noun Project for the vectors used in the lead graphic.
