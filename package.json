@@ -1,7 +1,7 @@
 {
 	"name": "implant",
 	"main": "implant",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "🌱  asynchronous inline content replacement",
 	"license": "MIT",
 	"repository": "f1lt3r/implant",
