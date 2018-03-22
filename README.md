@@ -1,7 +1,6 @@
 # Implant
 
-<img align="right" height="260" src="https://i.imgur.com/otf7QJX.png">
-<img align="right" height="260" src="http://gruntjs.com/img/grunt-logo-no-wordmark.svg">
+<img align="right" height="260" src="implant-logo.png">
 
 > 🌱  asynchronous inline content replacement
 
