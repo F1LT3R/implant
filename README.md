@@ -1,6 +1,6 @@
-# Implant
-
 <img align="right" height="260" src="implant-logo.png">
+
+# Implant
 
 > 🌱  asynchronous inline content replacement
 
