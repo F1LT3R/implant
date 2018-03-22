@@ -174,7 +174,7 @@ test('Promise error throws', async t => {
 	t.is(error.message, 'Doh!')
 })
 
-test('get http', async t => {
+test('Fetching network resources', async t => {
 	const html = '<p>{get: "https://f1lt3r.github.io/foobar/bazqux.html"}</p>'
 
 	const handlers = {
@@ -191,4 +191,32 @@ test('get http', async t => {
 
 	const result = await implant(html, handlers)
 	t.is(result, '<p><h1>Hello, wombat!</h1></p>')
+})
+
+test('Using JavaScript objects', async t => {
+	const html = `
+		<div>{article: {id: 8421, section: 3}}</div>
+	`
+
+	const articles = {
+		8421: {
+			sections: {
+				3: 'Foo. Or foo not. There is no bar.'
+			}
+		}
+	}
+
+	const handlers = {
+		article: ref => {
+			const {id, section} = ref
+			return articles[id].sections[section]
+		}
+	}
+
+	const result = await implant(html, handlers)
+
+	const expected = `
+		<div>Foo. Or foo not. There is no bar.</div>
+	`
+	t.is(result, expected)
 })

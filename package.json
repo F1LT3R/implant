@@ -21,10 +21,22 @@
 	"files": [
 		"index.js"
 	],
-	"keywords": [],
+	"keywords": [
+		"implant",
+		"insert",
+		"replace",
+		"content",
+		"async",
+		"promise",
+		"string",
+		"object",
+		"handler",
+		"dynamic",
+		"node",
+		"module"
+	],
 	"dependencies": {
 		"balanced-match": "^1.0.0",
-		"chalk": "^2.3.2",
 		"lighter-json": "^2.0.0"
 	},
 	"devDependencies": {
