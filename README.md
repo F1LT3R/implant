@@ -99,3 +99,4 @@ Result:
 Thanks to the following designers from the Noun Project for the vectors used in the lead graphic.
 
 - [Sarah Rudkin](https://thenounproject.com/sarahdrudkin/)
+- [Alex Tai](https://thenounproject.com/sandorsz/)
