@@ -99,7 +99,7 @@ Result:
 It is also possible to use illegal JavaScript values, such as references to objects that do not exist. For example:
 
 ```html
-<div>{foo: this.value.does.not.exist}</div>
+<div>{foo: i.find.your.lack.of.qux.disturbing}</div>
 ```
 
 When an illegal value is encountered, Implant pass back a stringified version of the handler.
@@ -107,7 +107,7 @@ When an illegal value is encountered, Implant pass back a stringified version of
 ```js
 const handlers = {
     foo: uri => console.log
-    // 'this.value.does.not.exist'
+    // 'i.find.your.lack.of.qux.disturbing'
 }
 ```
 
