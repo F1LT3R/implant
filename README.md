@@ -1,4 +1,4 @@
-<img alt="Implant Logo" src="https://f1lt3r.github.io/implant/implant-logo.png" align="right" width="380">
+<img alt="Implant Logo" src="https://i.imgur.com/otf7QJX.png" align="right" width="380">
 
 # Implant
 
