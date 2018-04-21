@@ -32,6 +32,13 @@ const implant = (contents, handlers, opts, t = 1) => new Promise((resolve, rejec
 	const matches = []
 
 	let match = balanced('{', '}', contents)
+
+	// Quick exit for recursion and/or where
+	// no balanced pairs are found
+	if (!match) {
+		return resolve(contents)
+	}
+
 	let js = javascriptify(match)
 
 	while (match && js) {
