@@ -40,14 +40,19 @@ const implant = (contents, handlers, opts, t = 1) => new Promise((resolve, rejec
 	}
 
 	let js = javascriptify(match)
+	let namespace
 
 	while (match && js) {
-		const namespace = getNameSpace(js, handlers)
+		namespace = getNameSpace(js, handlers)
+
+		matches.push(match)
 
 		if (namespace) {
-			matches.push(match)
-			const resultFn = handlers[namespace](js[namespace])
+			const resultFn = handlers[namespace](js[namespace], opts)
 			promises.push(resultFn)
+		} else {
+			const subContent = `{${match.body}}`
+			promises.push(subContent)
 		}
 
 		match = balanced('{', '}', match.post)
@@ -58,9 +63,7 @@ const implant = (contents, handlers, opts, t = 1) => new Promise((resolve, rejec
 	}
 
 	if (promises.length === 0) {
-		const msg = 'No implant name-spaces were found in your content!'
-		const error = new Error(msg)
-		return reject(error)
+		return resolve(contents)
 	}
 
 	Promise.all(promises).then(fulfilled => {

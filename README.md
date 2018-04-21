@@ -9,6 +9,10 @@
 [![NPM Version](https://img.shields.io/npm/v/implant.svg)](https://www.npmjs.com/package/implant)
 [![XO code style](https://img.shields.io/badge/code_style-XO-5ed9c7.svg)](https://github.com/sindresorhus/xo)
 
+Support the development of Implant.
+
+<a href="https://patreon.com/bePatron?u=9720216"><img width="160" src="https://f1lt3r.io/content/images/2018/04/become_a_patron_button@2x.png"></a>
+
 ## Install
 
 ```

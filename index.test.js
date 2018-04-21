@@ -129,21 +129,6 @@ test('Multi-handler replacements', async t => {
 	t.is(result, expected)
 })
 
-test('No namespace available throws', async t => {
-	const contents = '<p>{ foo : \'single quote string\'}</p>'
-
-	const handlers = {
-		bork: () => {}
-	}
-
-	const error = await t.throws(
-		implant(contents, handlers)
-	)
-
-	const expectedErrMsg = 'No implant name-spaces were found in your content!'
-	t.is(error.message.indexOf(expectedErrMsg), 0)
-})
-
 test('Rejected promise catches', async t => {
 	const contents = '<p>{bongle: "Oops, you floobed!"}</p>'
 
@@ -282,3 +267,20 @@ test('No recusion by default', async t => {
 	t.is(result, expected)
 })
 
+test('Preserve non-existing handler content', async t => {
+	const html1 = '<div>{foo: do} {bar: dont}</div>'
+	const html2 = '<div>{bar: dont} {foo: do}</div>'
+
+	const handlers = {
+		foo: () => 'WORKS!'
+	}
+
+	const result1 = await implant(html1, handlers)
+	const result2 = await implant(html2, handlers)
+
+	const expected1 = '<div>WORKS! {bar: dont}</div>'
+	const expected2 = '<div>{bar: dont} WORKS!</div>'
+
+	t.is(result1, expected1)
+	t.is(result2, expected2)
+})
