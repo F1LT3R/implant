@@ -1,8 +1,8 @@
 const balanced = require('balanced-match')
 const lighterJson = require('lighter-json')
 
-const getNameSpace = (js, opts) =>
-	Reflect.ownKeys(opts).find(namespace =>
+const getNameSpace = (js, handlers) =>
+	Reflect.ownKeys(handlers).find(namespace =>
 		Reflect.has(js, namespace) ? namespace : false
 	)
 
@@ -27,7 +27,7 @@ const javascriptify = match => {
 	return js
 }
 
-const implant = (contents, opts) => new Promise((resolve, reject) => {
+const implant = (contents, handlers, opts, t = 1) => new Promise((resolve, reject) => {
 	const promises = []
 	const matches = []
 
@@ -35,11 +35,11 @@ const implant = (contents, opts) => new Promise((resolve, reject) => {
 	let js = javascriptify(match)
 
 	while (match && js) {
-		const namespace = getNameSpace(js, opts)
+		const namespace = getNameSpace(js, handlers)
 
 		if (namespace) {
 			matches.push(match)
-			const resultFn = opts[namespace](js[namespace])
+			const resultFn = handlers[namespace](js[namespace])
 			promises.push(resultFn)
 		}
 
@@ -61,9 +61,20 @@ const implant = (contents, opts) => new Promise((resolve, reject) => {
 
 		fulfilled.forEach((result, index) => {
 			output += matches[index].pre
-			output += result
+			if (result) {
+				output += result
+			} else {
+				output += contents.substr(matches[index].start, (matches[index].end - matches[index].start) + 1)
+			}
 		})
 		output += matches[matches.length - 1].post
+
+		if (typeof opts === 'object' &&
+			Reflect.has(opts, 'maxRecursion') &&
+			t < opts.maxRecursion) {
+			t++
+			return resolve(implant(output, handlers, opts, t))
+		}
 
 		resolve(output)
 	}).catch(err => {

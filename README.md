@@ -127,6 +127,45 @@ const handlers = {
 }
 ```
 
+## Recusion
+
+You can recurse through the result of you implant like this:
+
+```js
+const html = {
+    level1: '<div>1 {include: level2}</div>',
+    level2: '<div>2 {include: level3}</div>',
+    level3: '<div>3 {include: level4}</div>'
+}
+
+const handlers = {
+    include: ref => {
+        return html[ref]
+    }
+}
+
+const opts = {
+    maxRecursion: 3
+}
+
+;(async () => {
+    const result = await implant(html.level1, handlers, opts)
+
+})()
+```
+
+Result:
+
+```html
+<div>1 <div>2 <div>3 {include: level4}</div></div></div>
+```
+
+### Why Recusion?
+
+You may want to use recursion if you are building a just-in-time dependancy tree. For example: if your implant fetched a dependency that contained a reference to another depdendancy.
+
+Note: if you do not specify the `maxRecusion` option, implant will only run once.
+
 ## Credits
 
 Thanks to the following designers from the Noun Project for the vectors used in the lead graphic.

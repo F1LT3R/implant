@@ -239,3 +239,46 @@ test('Using illegal JavaScript values', async t => {
 	`
 	t.is(result, expected)
 })
+
+test('Recursive depth', async t => {
+	const html = {
+		level1: '<div>1 {include: level2}</div>',
+		level2: '<div>2 {include: level3}</div>',
+		level3: '<div>3 {include: level4}</div>'
+	}
+
+	const handlers = {
+		include: ref => {
+			return html[ref]
+		}
+	}
+
+	const opts = {
+		maxRecursion: 3
+	}
+
+	const result = await implant(html.level1, handlers, opts)
+
+	const expected = `<div>1 <div>2 <div>3 {include: level4}</div></div></div>`
+	t.is(result, expected)
+})
+
+test('No recusion by default', async t => {
+	const html = {
+		level1: '<div>1 {include: level2}</div>',
+		level2: '<div>2 {include: level3}</div>',
+		level3: '<div>3 {include: level4}</div>'
+	}
+
+	const handlers = {
+		include: ref => {
+			return html[ref]
+		}
+	}
+
+	const result = await implant(html.level1, handlers)
+
+	const expected = `<div>1 <div>2 {include: level3}</div></div>`
+	t.is(result, expected)
+})
+
