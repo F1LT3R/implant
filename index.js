@@ -7,13 +7,17 @@ const getNameSpace = (js, handlers) =>
 	)
 
 const getValueAsIs = match => {
-	const re = new RegExp(/(\s*\S+\s*):\s*(.*)/)
-	const found = re.exec(match.body)
-	const namespace = found[1]
-	const asIsValue = found[2]
-	const json = `{${namespace}:${JSON.stringify(asIsValue)}}`
-	const js = lighterJson.evaluate(json)
-	return js
+	try {
+		const re = new RegExp(/(\s*\S+\s*):\s*(.*)/)
+		const found = re.exec(match.body)
+		const namespace = found[1]
+		const asIsValue = found[2]
+		const json = `{${namespace}:${JSON.stringify(asIsValue)}}`
+		const js = lighterJson.evaluate(json)
+		return js
+	} catch (err) {
+		return match
+	}
 }
 
 const javascriptify = match => {
