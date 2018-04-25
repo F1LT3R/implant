@@ -1,7 +1,7 @@
 {
 	"name": "implant",
 	"main": "implant",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "🌱  asynchronous inline content replacement",
 	"license": "MIT",
 	"repository": "f1lt3r/implant",
@@ -40,7 +40,7 @@
 		"module"
 	],
 	"dependencies": {
-		"balanced-pairs": "^1.1.1",
+		"balanced-pairs": "^1.1.2",
 		"lighter-json": "^2.0.0"
 	},
 	"devDependencies": {
