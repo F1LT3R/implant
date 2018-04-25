@@ -1,96 +1,115 @@
-const balanced = require('balanced-match')
+const balance = require('balanced-pairs')
 const lighterJson = require('lighter-json')
 
-const getNameSpace = (js, handlers) =>
-	Reflect.ownKeys(handlers).find(namespace =>
-		Reflect.has(js, namespace) ? namespace : false
-	)
+const getNamedCb = (namespace, handlers) => {
+	if (typeof handlers !== 'object') {
+		return
+	}
 
-const getValueAsIs = match => {
+	if (Reflect.has(handlers, namespace)) {
+		return handlers[namespace]
+	}
+}
+
+const getValueAsIs = body => {
 	try {
 		const re = new RegExp(/(\s*\S+\s*):\s*(.*)/)
-		const found = re.exec(match.body)
+		const found = re.exec(body)
 		const namespace = found[1]
 		const asIsValue = found[2]
 		const json = `{${namespace}:${JSON.stringify(asIsValue)}}`
 		const js = lighterJson.evaluate(json)
 		return js
 	} catch (err) {
-		return match
+		return body
 	}
 }
 
-const javascriptify = match => {
+const javascriptify = body => {
 	let js
 
-	try {
-		js = lighterJson.evaluate(`{${match.body}}`)
-	} catch (err) {
-		js = getValueAsIs(match)
+	if (body.length === 0) {
+		return undefined
 	}
+
+	try {
+		js = lighterJson.evaluate(`{${body}}`)
+	} catch (err) {
+		js = getValueAsIs(body)
+	}
+
 	return js
 }
 
-const implant = (contents, handlers, opts, t = 1) => new Promise((resolve, reject) => {
+// eslint-disable-next-line max-params
+const implant = (contents, handlers, opts, t = 1, last = '') => new Promise((resolve, reject) => {
 	const promises = []
-	const matches = []
 
-	let match = balanced('{', '}', contents)
+	const blocks = balance(contents, {open: '{', close: '}'})
 
-	// Quick exit for recursion and/or where
-	// no balanced pairs are found
-	if (!match) {
+	if (blocks.list.length === 0) {
 		return resolve(contents)
 	}
 
-	let js = javascriptify(match)
-	let namespace
+	blocks.list.forEach(item => {
+		const body = item.body
+		const obj = javascriptify(body)
 
-	while (match && js) {
-		namespace = getNameSpace(js, handlers)
-
-		matches.push(match)
-
-		if (namespace) {
-			const resultFn = handlers[namespace](js[namespace], opts)
-			promises.push(resultFn)
-		} else {
-			const subContent = `{${match.body}}`
-			promises.push(subContent)
+		if (typeof obj === 'undefined') {
+			promises.push(body)
+			return
 		}
 
-		match = balanced('{', '}', match.post)
+		let namespace
 
-		if (match) {
-			js = javascriptify(match)
+		// Just one namespace per object
+		if (typeof obj === 'string') {
+			namespace = obj
 		}
-	}
 
-	if (promises.length === 0) {
-		return resolve(contents)
-	}
+		if (typeof obj === 'object') {
+			namespace = Reflect.ownKeys(obj)[0]
+		}
 
-	Promise.all(promises).then(fulfilled => {
-		let output = ''
+		const handler = getNamedCb(namespace, handlers)
 
-		fulfilled.forEach((result, index) => {
-			output += matches[index].pre
-			if (result) {
-				output += result
-			} else {
-				output += contents.substr(matches[index].start, (matches[index].end - matches[index].start) + 1)
+		if (!handler) {
+			return promises.push(body)
+		}
+
+		promises.push(new Promise((resolve, reject) => {
+			const handleResult = handler(obj[namespace], opts)
+
+			if (!handleResult) {
+				return resolve(item.body)
 			}
-		})
-		output += matches[matches.length - 1].post
+
+			if (handleResult.then) {
+				return handleResult.then(result => {
+					item.updateBody(result)
+					resolve(result)
+				}).catch(reject)
+			}
+
+			item.updateBody(handleResult)
+			resolve(handleResult)
+		}))
+	})
+
+	Promise.all(promises).then(() => {
+		const assembled = blocks.flatten()
 
 		if (typeof opts === 'object' &&
-			Reflect.has(opts, 'maxRecursion') &&
-			t < opts.maxRecursion) {
+			Reflect.has(opts, 'maxDepth') &&
+			// Don recurse if we have reached max depth
+			t < opts.maxDepth &&
+			// Don't recusrve if there were no changes
+			assembled !== last) {
 			t++
-			return resolve(implant(output, handlers, opts, t))
+			return resolve(implant(assembled, handlers, opts, t, assembled))
 		}
 
-		resolve(output)
+		resolve(assembled)
 	}).catch(err => {
 		reject(err)
 	})

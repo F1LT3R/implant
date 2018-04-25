@@ -1,3 +1,5 @@
+// Debug
+// import util from 'util'
 import request from 'request'
 import test from 'ava'
 import implant from '.'
@@ -43,7 +45,10 @@ test('JavaScript object', async t => {
 		}
 	}
 
-	const result = await implant(contents, handlers)
+	const result = await implant(contents, handlers, {
+		maxDepth: 10
+	})
+
 	t.is(result, '<p>qux</p>')
 })
 
@@ -239,7 +244,7 @@ test('Recursive depth', async t => {
 	}
 
 	const opts = {
-		maxRecursion: 3
+		maxDepth: 3
 	}
 
 	const result = await implant(html.level1, handlers, opts)
